@@ -4,7 +4,7 @@ from django.db import models
 class Category(models.Model):
     """Модель категории товаров"""
 
-    objects = None
+
     name = models.CharField(
         max_length=100,
         verbose_name='наименование'
@@ -27,7 +27,7 @@ class Category(models.Model):
 class Product(models.Model):
     """Модель товара"""
 
-    objects = None
+
     name = models.CharField(
         max_length=100,
         verbose_name='наименование'
