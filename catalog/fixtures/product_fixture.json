@@ -1,0 +1,41 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "name": "Смартфон",
+        "description": "Мощный смартфон",
+        "image": "",
+        "category": 1,
+        "price": "25999.99",
+        "created_at": "2025-10-19T16:00:27.893Z",
+        "updated_at": "2025-10-19T16:04:09.981Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+        "name": "Ноутбук",
+        "description": "Игровой ноутбук",
+        "image": "",
+        "category": 1,
+        "price": "89999.99",
+        "created_at": "2025-10-19T16:00:28.326Z",
+        "updated_at": "2025-10-19T16:00:28.326Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+        "name": "Футболка",
+        "description": "Хлопковая футболка",
+        "image": "",
+        "category": 3,
+        "price": "999.99",
+        "created_at": "2025-10-19T16:00:30.744Z",
+        "updated_at": "2025-10-19T16:00:30.744Z"
+    }
+}
+]
