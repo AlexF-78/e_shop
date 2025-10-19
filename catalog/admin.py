@@ -1,3 +1,15 @@
-from django.contrib import admin
-
+﻿from django.contrib import admin
+from .models import Category, Product
 # Register your models here.
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')  # id и name в списке
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'price', 'category')  # id, name, price, category
+    list_filter = ('category',)  # Фильтрация по категории
+    search_fields = ('name', 'description')  # Поиск по name и description
