@@ -1,0 +1,53 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}
+{% if object %}Редактирование {{ object.title }}{% else %}Создание записи{% endif %} - Блог
+{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Редактирование записи{% else %}Создание новой записи{% endif %}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        {{ form.title.label_tag }}
+        {{ form.title }}
+        {% if form.title.errors %}
+        <div class="text-danger">{{ form.title.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.content.label_tag }}
+        {{ form.content }}
+        {% if form.content.errors %}
+        <div class="text-danger">{{ form.content.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.preview.label_tag }}
+        {{ form.preview }}
+        {% if form.preview.errors %}
+        <div class="text-danger">{{ form.preview.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-3 form-check">
+        {{ form.is_published }}
+        {{ form.is_published.label_tag }}
+        {% if form.is_published.errors %}
+        <div class="text-danger">{{ form.is_published.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success">
+            {% if object %}Сохранить изменения{% else %}Создать запись{% endif %}
+        </button>
+        <a href="{% if object %}{% url 'blog:post_detail' object.pk %}{% else %}{% url 'blog:post_list' %}{% endif %}" 
+           class="btn btn-secondary">Отмена</a>
+    </div>
+</form>
+{% endblock %}
