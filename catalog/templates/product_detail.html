@@ -19,6 +19,14 @@
     {% endif %}
 </div>
 
+<!-- Кнопки управления -->
+<div class="text-center mb-4">
+    <a href="{% url 'catalog:product_create' %}" class="btn btn-success btn-lg">Добавить товар</a>
+    <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-warning btn-lg">Редактировать</a>
+    <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-outline-danger btn-lg">Удалить</a>
+    <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-primary btn-lg">Все товары</a>
+</div>
+
 <div class="row justify-content-center">
     <div class="col-8">
         <div class="card mb-4 box-shadow">
@@ -41,6 +49,17 @@
                     <p>{{ product.description }}</p>
                 </div>
                 {% endif %}
+
+                                <div class="mt-4 pt-4 border-top">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <small class="text-muted">Создан: {{ product.created_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Обновлен: {{ product.updated_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
