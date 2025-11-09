@@ -64,6 +64,15 @@ class Product(models.Model):
         verbose_name='дата последнего изменения'
     )
 
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name='Опубликовано'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активный'
+    )
+
     class Meta:
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
