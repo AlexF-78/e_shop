@@ -9,6 +9,11 @@
     <h1 class="display-4">Главная</h1>
 </div>
 
+<div class="text-center mb-4">
+    <a href="{% url 'catalog:product_create' %}" class="btn btn-success btn-lg">Добавить товар</a>
+    <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-primary btn-lg">Все товары</a>
+</div>
+
 <div class="row text-center">
     {% for product in products %}
     <div class="col-4 mb-4">
