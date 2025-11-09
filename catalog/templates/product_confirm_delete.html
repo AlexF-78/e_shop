@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Удаление товара - Skystore{% endblock %}
+
+{% block content %}
+<!-- Кнопка НАЗАД -->
+<div class="mb-4">
+    <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-outline-secondary">
+        ← Назад к товару
+    </a>
+</div>
+
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Удаление товара</h1>
+    <p class="lead text-danger">Подтвердите удаление товара</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div class="card mb-4 box-shadow border-danger">
+            <div class="card-header text-center bg-danger text-white">
+                <h4 class="my-0 font-weight-normal">Внимание! Удаление товара</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="alert alert-warning mb-4">
+                    <h5>Вы собираетесь удалить товар!</h5>
+                    <p class="mb-0">Это действие нельзя отменить. Все данные о товаре будут безвозвратно удалены.</p>
+                </div>
+
+                <!-- Карточка товара для подтверждения -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal">{{ product.name }}</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid mb-3"
+                             style="height: 100px; object-fit: cover;">
+                        {% endif %}
+
+                        {% if product.description %}
+                        <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                        {% endif %}
+
+                        {% if product.category %}
+                        <p class="card-text">
+                            <small class="text-muted">Категория: {{ product.category.name }}</small>
+                        </p>
+                        {% endif %}
+
+                        <h1 class="card-title pricing-card-title">{{ product.price }} ₽</h1>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="submit" class="btn btn-lg btn-danger">Да, удалить товар</button>
+                        <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-lg btn-outline-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
