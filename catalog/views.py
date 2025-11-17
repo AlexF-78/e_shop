@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 # from django.shortcuts import get_object_or_404,render
 # from django.views import View
@@ -16,22 +17,16 @@ class HomeView(ListView):
         return Product.objects.all()
 
 
-# def home(request):
-#     # Получаем все товары для отображения на Главной
-#     products = Product.objects.all()
-#     return render(request, 'home.html', {'products': products})
-
 class ContactView(TemplateView):
     template_name = 'contacts.html'
 
-# def contact(request):
-#     return render(request, 'contacts.html')
 
-
-class ProductView(DetailView):
+class ProductView(LoginRequiredMixin, DetailView):
+    """ Просмотр деталей товара только для авторизованных пользователей"""
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
+    login_url = '/users/login/'
 
     def get_queryset(self):
         """Оптимизируем запрос, загружая связанные категории"""
@@ -48,11 +43,19 @@ class ProductListView(ListView):
         return Product.objects.all().order_by('name')
 
 
-class ProductCreateView(CreateView):
-    """Создание нового товара"""
+class ProductCreateView(LoginRequiredMixin, CreateView):
+    """Создание нового товара только для авторизованных пользователей"""
     model = Product
     form_class = ProductForm
     template_name = 'product_form.html'
+    login_url = '/users/login/'
+
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Устанавливаем queryset для категорий
+        form.fields['category'].queryset = Category.objects.all()
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,11 +75,12 @@ class ProductCreateView(CreateView):
         return reverse_lazy('catalog:product_detail', kwargs={'pk': self.object.pk})
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """Редактирование товара"""
     model = Product
     form_class = ProductForm
     template_name = 'product_form.html'
+    login_url = '/users/login/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -96,12 +100,13 @@ class ProductUpdateView(UpdateView):
         return reverse_lazy('catalog:product_detail', kwargs={'pk': self.object.pk})
 
 
-class ProductDeleteView(DeleteView):
-    """Удаление товара"""
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    """Удаление товара только для авторизованных пользователей"""
     model = Product
     template_name = 'product_confirm_delete.html'
     context_object_name = 'product'
     success_url = reverse_lazy('catalog:home')
+    login_url = '/users/login/'
 
     def form_valid(self, form):
         product_name = self.object.name
