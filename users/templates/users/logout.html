@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Выход - Skystore{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h2>Вы вышли из системы</h2>
+            <p class="mb-4">Спасибо, что посетили наш сайт.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{% url 'users:login' %}" class="btn btn-primary me-md-2">Войти снова</a>
+                <a href="{% url 'catalog:home' %}" class="btn btn-secondary">На главную</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -16,9 +16,17 @@
     <p class="lead">Полный каталог нашей продукции</p>
 </div>
 
+<!-- Кнопка "Добавить товар" только для авторизованных -->
+{% if user.is_authenticated %}
 <div class="text-center mb-4">
     <a href="{% url 'catalog:product_create' %}" class="btn btn-success btn-lg">Добавить товар</a>
 </div>
+{% else %}
+<div class="alert alert-info text-center mb-4">
+    <p class="mb-0">Для управления товарами необходимо <a href="{% url 'users:login' %}" class="alert-link">войти в
+        систему</a></p>
+</div>
+{% endif %}
 
 <div class="row text-center">
     {% for product in products %}
@@ -35,12 +43,16 @@
 
                 {% if product.description %}
                 <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+
                 {% else %}
                 <p class="card-text text-muted">Описание отсутствует</p>
                 {% endif %}
 
                 <h1 class="card-title pricing-card-title">{{ product.price }} ₽</h1>
 
+                <!-- Кнопки управления только для авторизованных пользователей -->
+
+                {% if user.is_authenticated %}
                 <div class="btn-group w-100" role="group">
                     <a href="{% url 'catalog:product_detail' pk=product.pk %}"
                        class="btn btn-sm btn-outline-primary px-1">Подробнее</a>
@@ -49,6 +61,13 @@
                     <a href="{% url 'catalog:product_delete' pk=product.pk %}"
                        class="btn btn-sm btn-outline-danger px-1">Удалить</a>
                 </div>
+                {% else %}
+                <div class="alert alert-light border">
+                    <small class="text-muted">
+                        <a href="{% url 'users:login' %}" class="alert-link">Войдите</a> для управления товарами
+                    </small>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -56,8 +75,12 @@
     <div class="col-12">
         <div class="alert alert-info text-center">
             <h4>Товары отсутствуют</h4>
-            <p>Будьте первым, кто добавит товар в каталог!</p>
-            <a href="{% url 'product_create' %}" class="btn btn-primary">Добавить первый товар</a>
+            <p>Добавьте товар в каталог!</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'catalog:product_create' %}" class="btn btn-primary">Добавить товар</a>
+            {% else %}
+            <a href="{% url 'users:login' %}" class="btn btn-primary">Войти для добавления товаров</a>
+            {% endif %}
         </div>
     </div>
     {% endfor %}
