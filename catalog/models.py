@@ -1,9 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
-# Create your models here.
+
 class Category(models.Model):
     """Модель категории товаров"""
-
 
     name = models.CharField(
         max_length=100,
@@ -27,6 +27,18 @@ class Category(models.Model):
 class Product(models.Model):
     """Модель товара"""
 
+    PUBLISH_STATUS = [
+        ('draft', 'Черновик'),
+        ('published', 'Опубликован'),
+        ('archived', 'В архиве'),
+    ]
+
+    publish_status = models.CharField(
+        max_length=20,
+        choices=PUBLISH_STATUS,
+        default='draft',  # по умолчанию черновик
+        verbose_name='Статус публикации'
+    )
 
     name = models.CharField(
         max_length=100,
@@ -72,11 +84,22 @@ class Product(models.Model):
         default=True,
         verbose_name='Активный'
     )
+    owner = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        verbose_name='Владелец',
+        blank=True,
+        null=True
+    )
 
     class Meta:
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
         ordering = ['name']
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+            ("can_delete_any_product", "Может удалять любой продукт"),
+        ]
 
     def __str__(self):
         return self.name
