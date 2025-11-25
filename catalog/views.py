@@ -1,11 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, UpdateView, DeleteView
 from .forms import ProductForm
 from .models import Product, Category
+from .services import ProductService
 
 
 class HomeView(ListView):
@@ -17,11 +21,19 @@ class HomeView(ListView):
         """Оптимизируем запрос, загружая связанные категории"""
         return Product.objects.all()
 
+    def get_context_data(self, **kwargs):
+        """Добавляем категории в контекст"""
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+
+        return context
+
 
 class ContactView(TemplateView):
     template_name = 'contacts.html'
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductView(LoginRequiredMixin, DetailView):
     """ Просмотр деталей товара только для авторизованных пользователей"""
     model = Product
@@ -41,7 +53,12 @@ class ProductListView(ListView):
     context_object_name = 'products'
 
     def get_queryset(self):
-        return Product.objects.all().order_by('name')
+       queryset = cache.get('products_queryset')
+       if not queryset:
+           queryset = super().get_queryset()
+           cache.set('products_queryset',queryset, 60 * 15)
+       return queryset
+        # return Product.objects.all().order_by('name')
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -117,6 +134,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse_lazy('catalog:product_detail', kwargs={'pk': self.object.pk})
 
 
+@method_decorator(cache_page(60*15), name='dispatch')
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """Удаление товара только для авторизованных пользователей"""
     model = Product
@@ -157,3 +175,20 @@ class ProductUnpublishView(LoginRequiredMixin, PermissionRequiredMixin, View):
         else:
             messages.info(request, f'Товар "{product.name}" уже не опубликован!')
         return redirect('catalog:product_detail', pk=product.pk)
+
+
+class CategoryProductsView(ListView):
+    """Список товаров по категории"""
+    model = Product
+    template_name = 'category_products.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        category_id = self.kwargs['category_id']
+        return ProductService.get_products_by_category(category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category_id = self.kwargs['category_id']
+        context['category'] = get_object_or_404(Category, id=category_id)
+        return context
