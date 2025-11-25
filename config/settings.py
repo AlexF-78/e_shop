@@ -1,5 +1,6 @@
 
 import os
+
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -25,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'catalog',
-    'blog'
+    'blog',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -114,6 +116,37 @@ STATICFILES_DIRS = [BASE_DIR / "static",]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 MEDIA_URL = '/media/'  # URL для доступа к медиафайлам
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Папка для хранения медиафайлов
 
+if DEBUG:
+    STATICFILES_DIRS = [BASE_DIR / "static",]
+else:
+    STATIC_ROOT = BASE_DIR / 'static'
+
+LOGIN_REDIRECT_URL = 'users:profile'  # После логина на страницу профиля
+LOGIN_URL = 'users:login'             # URL для страницы входа
+LOGOUT_REDIRECT_URL = 'users:login'   # После выхода на страницу входа
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Письма выводятся в консоль
+DEFAULT_FROM_EMAIL = 'fab-78@mail.ru'  # Email отправителя
+
+# Для реальной отправки:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.yandex.ru'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+
+CACHE_ENABLE = True
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost/1',
+    }
+}

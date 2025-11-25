@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -9,9 +8,64 @@
     <h1 class="display-4">Главная</h1>
 </div>
 
+<div class="auth-section mb-4">
+    {% if user.is_authenticated %}
+    <div class="alert alert-success d-inline-block">
+        <strong>Вы вошли как:</strong> {{ user.email }}
+        <div class="mt-2">
+            <a href="{% url 'users:profile' %}" class="btn btn-primary btn-sm">Профиль</a>
+
+            <!-- ФОРМА ДЛЯ ВЫХОДА -->
+            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
+            </form>
+        </div>
+    </div>
+
+
+    {% else %}
+    <div class="alert alert-info d-inline-block">
+        <strong>Вы не авторизованы</strong>
+        <div class="mt-2">
+            <a href="{% url 'users:login' %}" class="btn btn-primary btn-sm">Войти</a>
+            <a href="{% url 'users:register' %}" class="btn btn-success btn-sm">Регистрация</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
 <div class="text-center mb-4">
     <a href="{% url 'catalog:product_create' %}" class="btn btn-success btn-lg">Добавить товар</a>
     <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-primary btn-lg">Все товары</a>
+</div>
+
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">Категории товаров</h2>
+        <div class="row text-center">
+            {% for category in categories %}
+            <div class="col-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ category.name }}</h5>
+                        {% if category.description %}
+                        <p class="card-text">{{ category.description|truncatewords:10 }}</p>
+                        {% endif %}
+                        <a href="{% url 'catalog:category_products' category_id=category.id %}"
+                           class="btn btn-primary">Смотреть товары</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Категории отсутствуют
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 <div class="row text-center">
