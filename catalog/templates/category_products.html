@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary">
+        ← На главную
+    </a>
+</div>
+
+
+<h1>
+    {% if category %}
+    Товары в категории: {{ category.name }}
+    {% else %}
+    Категория не найдена
+    {% endif %}
+</h1>
+
+{% if products %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                 style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ product.name }}</h5>
+
+                <!-- Статус публикации -->
+                <div class="mb-2">
+                                <span class="badge
+                                    {% if product.publish_status == 'published' %}bg-success
+                                    {% elif product.publish_status == 'draft' %}bg-secondary
+                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {{ product.get_publish_status_display }}
+                                </span>
+                    {% if product.owner %}
+                    <span class="badge bg-info">Владелец: {{ product.owner.username }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="card-text flex-grow-1">{{ product.description|truncatewords:20 }}</p>
+                <p class="text-muted"><strong>Цена: {{ product.price }} руб.</strong></p>
+
+                <!-- КНОПКИ УПРАВЛЕНИЯ -->
+                <div class="mt-auto">
+                    <a href="{% url 'catalog:product_detail' pk=product.pk %}"
+                       class="btn btn-primary btn-sm w-100 mb-2">
+                        Подробнее
+                    </a>
+
+                    {% if product.owner == user %}
+                    <a href="{% url 'catalog:product_update' pk=product.pk %}"
+                       class="btn btn-warning btn-sm w-100 mb-2">
+                        Редактировать
+                    </a>
+                    {% endif %}
+
+                    {% if product.owner == user or perms.catalog.can_delete_any_product %}
+                    <a href="{% url 'catalog:product_delete' pk=product.pk %}"
+                       class="btn btn-outline-danger btn-sm w-100 mb-2">
+                        Удалить
+                    </a>
+                    {% endif %}
+
+                    {% if perms.catalog.can_unpublish_product and product.publish_status == 'published' %}
+                    <form method="post" action="{% url 'catalog:product_unpublish' pk=product.pk %}" class="mb-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                            Снять с публикации
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <!-- Даты создания/обновления -->
+                <div class="mt-2 pt-2 border-top">
+                    <small class="text-muted">
+                        Создан: {{ product.created_at|date:"d.m.Y" }}<br>
+                        Обновлен: {{ product.updated_at|date:"d.m.Y" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>В этой категории пока нет товаров.</p>
+{% endif %}
+{% endblock %}
